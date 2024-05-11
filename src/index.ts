@@ -1,25 +1,33 @@
 import { Bot } from "grammy";
+import { I18n } from "@grammyjs/i18n";
 import { array2keyboard, randomArray, keyboard2array } from "./helpers";
 import { COLORS, TOKEN } from "./consts";
+import type { MyContext } from "./types";
 
-const bot = new Bot(TOKEN);
+const bot = new Bot<MyContext>(TOKEN);
+
+const i18n = new I18n<MyContext>({
+  defaultLocale: "en",
+  directory: "src/locales",
+});
+
+bot.use(i18n);
 
 bot.command("start", async (ctx) => {
-  await ctx.reply("Click cells, flood the board with a single color", {
+  await ctx.reply(ctx.t("how-play"), {
     reply_markup: {
-      inline_keyboard: array2keyboard(randomArray()),
+      inline_keyboard: array2keyboard(ctx, randomArray()),
     },
   });
 });
 
 bot.callbackQuery(/./, async (ctx) => {
   const { callback_query } = ctx.update;
-
   const selectedColor = callback_query.data;
 
   if (!COLORS.includes(selectedColor)) {
     await ctx.answerCallbackQuery({
-      text: "Please click on the cells with the color",
+      text: ctx.t("alert-press-to-score"),
     });
 
     return;
@@ -39,7 +47,7 @@ bot.callbackQuery(/./, async (ctx) => {
 
   if (currentColor === selectedColor) {
     await ctx.answerCallbackQuery({
-      text: "This color has already been selected",
+      text: ctx.t("alert-press-to-current-color"),
     });
 
     return;
@@ -91,9 +99,9 @@ bot.callbackQuery(/./, async (ctx) => {
   const score = parseInt(prevScore) + 1;
 
   if (isEndGame) {
-    await ctx.editMessageText(`Flood in ${score} steps!`);
+    await ctx.editMessageText(ctx.t("flood-in-score", { score }));
     await ctx.answerCallbackQuery({
-      text: "That's it, you've flooded in the entire field",
+      text: ctx.t("flood-in"),
     });
   } else {
     await ctx.answerCallbackQuery({ show_alert: false });
@@ -101,7 +109,7 @@ bot.callbackQuery(/./, async (ctx) => {
 
   await ctx.editMessageReplyMarkup({
     reply_markup: {
-      inline_keyboard: array2keyboard(array, score),
+      inline_keyboard: array2keyboard(ctx, array, score),
     },
   });
 });
