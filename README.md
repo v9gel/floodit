@@ -21,6 +21,7 @@ bun run src/index.ts
 ## How to play
 
 Click cells, flood the board with a single color.
+
 ![how to play](img/how-play.gif)
 
 ## Licence
