@@ -1,14 +1,14 @@
 import { Bot } from "grammy";
 import { I18n } from "@grammyjs/i18n";
-import { array2keyboard, randomArray, keyboard2array } from "./helpers";
-import { COLORS, TOKEN } from "./consts";
-import type { MyContext } from "./types";
+import { array2keyboard, randomArray, keyboard2array } from "./src/helpers";
+import { COLORS, TOKEN } from "./src/consts";
+import type { MyContext } from "./src/types";
 
 const bot = new Bot<MyContext>(TOKEN);
 
 const i18n = new I18n<MyContext>({
   defaultLocale: "en",
-  directory: "src/locales",
+  directory: "locales",
 });
 
 bot.use(i18n);
